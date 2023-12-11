@@ -3,13 +3,18 @@ import shutil
 import description
 
 
-def delete_files_and_dir(dir):
+def delete_files_and_dir(dir: str) -> None:
+    """удаляет файлы и папки в переданной дерриктории"""
     all_files = os.listdir(dir)
     for file in enumerate(all_files):
         os.remove(dir+"/"+file[1])
     os.rmdir(dir)
 
 def make_copy_dataset(name: str):
+    """
+    Делает копию датасета, переименовывая файлы 
+    в формат<class_номер.txt>и создает её описание
+    """
     if not os.path.isdir(name):
         os.mkdir(name)
     else:
