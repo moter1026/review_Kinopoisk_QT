@@ -1,7 +1,7 @@
 from PyQt6.QtCore import QSize
 from PyQt6.QtGui import QPalette, QIcon
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QScrollArea, QFileDialog, QSizePolicy, QMessageBox, QLineEdit
-                            
+
 
 import sys
 
@@ -10,27 +10,33 @@ import copy_dataset
 import copy_dataset_random
 import description
 
+
 class ButtonYellow(QPushButton):
     def __init__(self, str: str) -> None:
         super().__init__()
-        self.setFixedSize(QSize(100,50))
-        self.setStyleSheet("background-color: yellow; border: 1px solid black; border-radius:10px;")
+        self.setFixedSize(QSize(100, 50))
+        self.setStyleSheet(
+            "background-color: yellow; border: 1px solid black; border-radius:10px;")
         self.adjustSize()
         # self.move(200, 200)
-        
+
         self.setText(str)
+
 
 class ButtonBlack(QPushButton):
     def __init__(self, str: str) -> None:
         super().__init__()
-        self.setFixedSize(QSize(200,50))
+        self.setFixedSize(QSize(200, 50))
         # self.setMaximumWidth(100)
-        self.setStyleSheet("background-color: black; border: 1px solid white; border-radius:10px; color: white; width: 100px; white-space: pre-line;")
+        self.setStyleSheet(
+            "background-color: black; border: 1px solid white; border-radius:10px; color: white; width: 100px; white-space: pre-line;")
         self.adjustSize()
-        self.setSizePolicy(QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred))
+        self.setSizePolicy(QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred))
         # self.move(200, 200)
-        
+
         self.setText(str)
+
 
 class MainWindow(QMainWindow):
     def __init__(self) -> None:
@@ -38,7 +44,7 @@ class MainWindow(QMainWindow):
         # базовые настройки главного окна
         self.setWindowTitle("Lab3-main window")
         # self.setFixedSize(QSize(1000,600))
-        self.setMinimumSize(QSize(1000,600))
+        self.setMinimumSize(QSize(1000, 600))
         self.setStyleSheet("background-color: #E1E8FF;")
 
         # Создаю итераторы каждого класса для получения след и пред комментариев
@@ -57,10 +63,12 @@ class MainWindow(QMainWindow):
         self.comboBox = QComboBox()
         self.comboBox.addItems(["good", "bad"])
 
-        self.folderpath = QFileDialog.getExistingDirectory(self, 'Select Folder')
+        self.folderpath = QFileDialog.getExistingDirectory(
+            self, 'Select Folder')
 
         self.lineEditForAnyDescription = QLineEdit(self)
-        self.lineEditForAnyDescription.setPlaceholderText("Введите название нового файла с описанием любой папки")
+        self.lineEditForAnyDescription.setPlaceholderText(
+            "Введите название нового файла с описанием любой папки")
 
         # Слушаю изменения в комбобоксе
         self.comboBox.currentTextChanged.connect(self.indexChanged)
@@ -71,7 +79,6 @@ class MainWindow(QMainWindow):
         self.textLabel.setWordWrap(True)
         self.textLabel.setText("Нажмите на кнопку 'Следующий комментарий'")
         self.textLabel.adjustSize()
-        
 
         self.scrollArea = QScrollArea()
         self.scrollArea.setWidget(self.textLabel)
@@ -86,7 +93,6 @@ class MainWindow(QMainWindow):
         vlayout.addWidget(self.comboBox)
         vlayout.addWidget(self.button)
         vlayout.addWidget(self.button2)
-        
 
         hlayout = QHBoxLayout()
         hlayout.setSpacing(5)
@@ -97,24 +103,25 @@ class MainWindow(QMainWindow):
         # hlayout.addWidget(button)
 
         self.button.setCheckable(True)
-        if(self.comboBox.currentText() == "good"):
+        if (self.comboBox.currentText() == "good"):
             self.button.clicked.connect(self.nextGoodReview)
             self.button2.clicked.connect(self.prevGoodReview)
         else:
             self.button.clicked.connect(self.nextBadReview)
             self.button2.clicked.connect(self.prevBadReview)
-        
-        self.buttonDatasetAnyFolders.clicked.connect(self.makeDescriptionAnyFolders)
+
+        self.buttonDatasetAnyFolders.clicked.connect(
+            self.makeDescriptionAnyFolders)
         self.buttonDataset.clicked.connect(self.makeDescription)
         self.buttonNewDataset.clicked.connect(self.makeNewDataset)
         self.buttonNewRandDataset.clicked.connect(self.makeNewRandDataset)
 
-
         widget = QWidget()
         widget.setLayout(hlayout)
         self.setCentralWidget(widget)
-   
+
     def nextGoodReview(self) -> None:
+        """Получает и выводит в label содержимое следующего хорошего комментария"""
         try:
             path_of_review = self.goodReview.__next__()
             text_of_review = ""
@@ -127,17 +134,19 @@ class MainWindow(QMainWindow):
                     break  # Прерываем цикл, если декодирование успешно
                 except UnicodeDecodeError:
                     continue  # Переходим к следующей кодировке, если декодирование не удалось
-                
+
             self.textLabel.setText("good\n" + text_of_review)
             self.textLabel.adjustSize()
         except FileNotFoundError:
             warning_box = QMessageBox()
             warning_box.setIcon(QMessageBox.Icon.Warning)
             warning_box.setWindowTitle("Предупреждение")
-            warning_box.setText("Сначала необходимо сделать копию датасета с рандомными числами")
+            warning_box.setText(
+                "Сначала необходимо сделать копию датасета с рандомными числами")
             warning_box.exec()
-    
+
     def nextBadReview(self) -> None:
+        """Получает и выводит в label содержимое следующего плохого комментария"""
         try:
             path_of_review = self.badReview.__next__()
             text_of_review = ""
@@ -156,11 +165,12 @@ class MainWindow(QMainWindow):
             warning_box = QMessageBox()
             warning_box.setIcon(QMessageBox.Icon.Warning)
             warning_box.setWindowTitle("Предупреждение")
-            warning_box.setText("Сначала необходимо сделать копию датасета с рандомными числами")
+            warning_box.setText(
+                "Сначала необходимо сделать копию датасета с рандомными числами")
             warning_box.exec()
 
-
     def prevGoodReview(self) -> None:
+        """Получает и выводит в label содержимое предыдущего хорошего комментария"""
         try:
             if self.goodReview.counter <= 1:
                 return
@@ -186,8 +196,9 @@ class MainWindow(QMainWindow):
             warning_box.setWindowTitle("Предупреждение")
             warning_box.setText("Что-то пошло не так!")
             warning_box.exec()
-    
+
     def prevBadReview(self) -> None:
+        """Получает и выводит в label содержимое предыдущего плохого комментария"""
         try:
             if self.badReview.counter <= 1:
                 return
@@ -214,10 +225,11 @@ class MainWindow(QMainWindow):
             warning_box.exec()
 
     def indexChanged(self, string: str) -> None:
+        """меняет функции, прослушивающие нажатие на кнопки, если выбран другой класс"""
         try:
             self.button.clicked.disconnect()
             self.button2.clicked.disconnect()
-            if(self.comboBox.currentText() == "good"):
+            if (self.comboBox.currentText() == "good"):
                 self.button.clicked.connect(self.nextGoodReview)
                 self.button2.clicked.connect(self.prevGoodReview)
             else:
@@ -231,8 +243,8 @@ class MainWindow(QMainWindow):
             warning_box.setText("Что-то пошло не так!")
             warning_box.exec()
 
-
     def makeDescription(self) -> None:
+        """создаёт описание главного датасета"""
         try:
             description.make_description("main_description", self.folderpath)
         except Exception as e:
@@ -242,8 +254,8 @@ class MainWindow(QMainWindow):
             warning_box.setText("Что-то не так!")
             warning_box.exec()
 
-    
     def makeDescriptionAnyFolders(self) -> None:
+        """создаёт описание любой папки"""
         try:
             if self.lineEditForAnyDescription.text() == "":
                 warning_box = QMessageBox()
@@ -252,16 +264,22 @@ class MainWindow(QMainWindow):
                 warning_box.setText("Вы не ввели название для нового файла!")
                 warning_box.exec()
                 return
-            folderpath = QFileDialog.getExistingDirectory(self, 'Выберите папку, для создания описания')
-            description.make_description(self.lineEditForAnyDescription.text(), folderpath)
+            folderpath = QFileDialog.getExistingDirectory(
+                self, 'Выберите папку, для создания описания')
+            description.make_description(
+                self.lineEditForAnyDescription.text(), folderpath)
         except Exception as e:
             warning_box = QMessageBox()
             warning_box.setIcon(QMessageBox.Icon.Warning)
             warning_box.setWindowTitle("Предупреждение")
             warning_box.setText("Это предупреждение!")
             warning_box.exec()
-    
+
     def makeNewDataset(self) -> None:
+        """
+        Делает копию датасета, переименовывая файлы 
+        в формат<class_номер.txt>и создает её описание
+        """
         try:
             copy_dataset.make_copy_dataset("new data")
         except Exception as e:
@@ -272,6 +290,10 @@ class MainWindow(QMainWindow):
             warning_box.exec()
 
     def makeNewRandDataset(self) -> None:
+        """
+        Делает копию датасета, переименовывая файлы 
+        в формат<случайный номер.txt>и создает её описание
+        """
         try:
             copy_dataset_random.make_copy_dataset_random("new random data")
         except Exception as e:
@@ -282,9 +304,8 @@ class MainWindow(QMainWindow):
             warning_box.exec()
 
 
-
 if __name__ == "__main__":
-    app = QApplication(sys.argv) 
+    app = QApplication(sys.argv)
 
     app.setWindowIcon(QIcon("./img/apple.svg"))
 

@@ -12,4 +12,3 @@ GoodIter = Iterator("bad")
 # print(iter(GoodIter).elem)
 for i, val in enumerate(GoodIter):
     print(i, ": ", val)
-
